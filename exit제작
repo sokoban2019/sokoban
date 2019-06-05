@@ -1,0 +1,6 @@
+exit(){
+        save();
+        printf("SEE YOU %s. . .\n", USER[userturn]);
+
+        return;
+}
