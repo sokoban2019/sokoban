@@ -1,0 +1,148 @@
+#include<stdio.h>
+#include<termio.h>
+
+int map();
+void command();
+int checkclear();
+void save();
+void mapprint();
+void up();
+void down();
+void right();
+void lefr();
+void exit();
+void new();
+void undo();
+void replay();
+void file();
+void display();
+void top();
+
+int stage=1;
+
+int getch(void){
+    int ch;
+    struct termios buf, save;
+    tcgetattr(0,&save);
+    buf = save;
+    buf.c_lflag &= ~(ICANON|ECHO);
+    buf.c_cc[VMIN] = 1;
+    buf.c_cc[VTIME] = 0;
+    tcsetattr(0, TCSAFLUSH, &buf);
+    ch = getchar();
+    tcsetattr(0, TCSAFLUSH, &save);
+    return ch;
+}
+
+
+int main()
+{
+
+   char USER[100][11];
+   int userturn=0;   
+   int mapcheck;
+
+
+    mapcheck=map();//맵 출력 + 보물 갯수 확인해서 맞으면 0 return 틀리면 1 return
+         if(mapcheck ==1)
+         {
+                 printf("오류");
+                  return 0;
+          }
+
+   printf("이름을 입력하세요#영문 최대 10글자");
+   scanf("%s",USER[userturn]);
+
+
+   while(1) {
+   
+   command();// 명령 받기 창고지기 조정,u,r,n,e,s,f,d,t
+   
+   if(stage ==6)
+   {
+      printf("GAME CLEAR!");
+      return 0;
+   }
+
+   }
+}
+
+
+   
+}
+
+void command()
+{
+   char usr;
+
+   while(1)
+{
+
+   mapprint();
+   usr=getch()//자동 반환
+   
+   switch(usr)
+{
+   case 'h':left();
+         
+   case 'j':down();
+
+   case 'k':up();
+
+   case 'l':right();
+
+   case 'e':exit();
+
+   case 's':save();
+
+   case 'n':new();
+
+   case 'u':undo();
+
+   case 'r':replay();
+
+   case 'f':file();
+
+   case 'd':display();
+
+   case 't':top();
+
+
+}
+   stage=stage+checkclear();// 보물을 모두 정리했는지 확인, 만약 다 정리했다면 return 1
+   save();//현재 상태 저장
+} 
+
+int map()
+{
+
+   char map[5][30][30];
+
+   FILE *fp = fopen("map1.txt","r");
+
+   char ch;
+
+   while()   
+
+
+
+}
+
+
+ char map(char name[][30]){
+          FILE *fp = fopen("map1.txt","r");
+          int i = 0;
+          char ch;
+ 
+          for(int j = 0; j < 900; j++) {
+                  ch = getc(fp);
+                  if(ch == EOF) break;
+
+                  if(ch == '\n') i++;
+                  name[i][j] = ch;
+ 
+                  printf("%c", name[i][j]);
+          }
+ 
+         fclose(fp);
+ }
