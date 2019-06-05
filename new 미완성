@@ -1,0 +1,10 @@
+#include <stdio.h>
+int main(){
+        void new();
+        void new(){
+                if(ch=='n'){
+                        system("clear");
+                        stage=0;
+                        getmap(char map[5][30][30], int stage);
+                }
+        }
