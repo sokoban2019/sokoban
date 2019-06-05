@@ -1,0 +1,37 @@
+void replay();
+void replay(){
+                FILE*fp=fopen("map1.txt","r");
+                int i=0,j=0;
+                int stop=0;
+                fscanf(fp,"%c",&temp);
+                while(stop==0){
+                        if(temp==stage){
+                                        if(temp==stage+1){
+                                                stop++;
+                                        }
+                                if(temp=='@'){
+                                        player_x[stage]=i;
+                                        player_y[stage]=j;
+                                }
+                                else if(temp=='\n'){
+                                        if(n_time==0){
+                                        }
+                                        else if(n_time>=1){
+                                                map[stage][i][j]='\n';
+                                                j++;
+                                                i=0;
+                                                max_y[stage]++;
+                                        }
+                                        n_time++;
+                                }
+                                map[stage][i][j] = temp;
+                                max_x[stage]++;
+                                i++;
+                        }
+                }
+                fclose(fp);
+                return ;
+
+}
+
+void prtMap()
