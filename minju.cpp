@@ -34,6 +34,8 @@ int max_x[5]={0},max_y[5]={0};
 int undocount=5;
 char USER[11];
 char Copy_map[5][30][30];
+int Copy_player_x[5];
+int Copy_player_y[5];
 
 
 int getch(void){
@@ -65,7 +67,7 @@ int main()
 
    printf("Start..\nInput name :");
    scanf("%s",USER);
-   printf("\nHello %s/n",USER);
+   
    undoupdate_first();
    command();// 명령 받기 창고지기 조정,u,r,n,e,s,f,d,t
    
@@ -231,15 +233,6 @@ void loadMap(){
             i++;
         }
     }
-    
-    while (k<5){
-   	 for (i=0;i<max_y[k];i++){
-    		for(j=0;j<max_x[k];j++){
-   	 			Copy_map[k][j][i]=map[k][j][i];
-			}
-		}
-		k++;
-	}
 	
 	fclose(fp);
 	return;
@@ -248,6 +241,7 @@ void loadMap(){
 void prtMap()
 {
 	system("clear");
+	printf("Hello %s\n",USER);
     int i=0, j=0;
        for(i=0;i<max_y[stage];i++){
           for(j=0;j<max_x[stage];j++){
@@ -540,32 +534,42 @@ void undoupdate()//undomap 움직일때마다 밀어서 넣어주기
 
 void undo()
 {
-   if(undocount==0)
-   {   
-      printf("undo finished");
-      return ;
-   }
+	if (undocount == 0)
+	{
+		printf("undo finishgc");
+		return;
+	}
+	player_x[stage] = Copy_player_x[0];
+	player_y[stage] = Copy_player_y[0];
+	
+	for (int p = 0; p < 4; p++)
+	{
+		Copy_player_x[p] = Copy_player_x[p + 1];
+		Copy_player_y[p] = Copy_player_y[p + 1];
 
-   for(int i=0; i<max_x[stage];i++)
-   {
-   for(int j=0;j<max_y[stage];j++)
-   {
-   map[stage][i][j]=undomap[0][i][j];
-   }
-   }
-   
-   for(int c=0;c<4;c++)
-   {
-   for (int i=0;i<max_x[stage];i++)
-   {
-   for(int j=0;j<max_y[stage];j++)
-   {
-      undomap[c][i][j]=undomap[c+1][i][j];
-   }
-   }
-   }
+	}
 
-   undocount--;
+	for (int i = 0; i<max_x[stage]; i++)
+	{
+		for (int j = 0; j<max_y[stage]; j++)
+		{
+			map[stage][i][j] = undomap[0][i][j];
+		}
+	}
+
+	for (int c = 0; c<4; c++)
+	{
+		for (int i = 0; i<max_x[stage]; i++)
+		{
+			for (int j = 0; j<max_y[stage]; j++)
+			{
+				undomap[c][i][j] = undomap[c + 1][i][j];
+			}
+		}
+	}
+		
+
+	undocount--;
 }
 
 void Save()
