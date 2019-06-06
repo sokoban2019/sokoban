@@ -619,7 +619,7 @@ void file()
       fscanf(fileload, "%s\n%d\n%d\n%d", &USER, &undocount, &move, &stage);
 //      fscanf(fileload, "\n", &ch);
       // ¸Ê ¹Þ¾Æ¿À±â
-      while(fscanf(fileload, "%c", &ch) != EOF){
+      while(fscanf(fileload, "\n%c", &ch) != EOF){
          map[stage][x][y] = ch;
          if (ch == '@'){
             player_x[stage]= x;
