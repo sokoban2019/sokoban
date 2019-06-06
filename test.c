@@ -23,6 +23,7 @@ void display();//명령어 설명*
 void undoupdate();//*움직일때마다 undomap밀어서 넣어주기
 void undoupdate_first();//* 스테이지 시작할때 undomap초기화해주는 과정
 void Copy();
+void reply();
 
 
 int stage = 0,move,STAGE=0;
@@ -56,7 +57,7 @@ int main()
 {
    int mapcheck;
    loadMap();
-   Copy();
+   //Copy();
    mapcheck=map_Check();//맵 출력 + 보물 갯수 확인해서 맞으면 return 1 틀리면 return 0
         if(!mapcheck)
          {
@@ -64,11 +65,11 @@ int main()
                   return 0;
           }
 
-   printf("Start../nInput name :");
+   printf("Start..\n Input name :");
    scanf("%s",USER);
    printf("\nHello %s/n",USER);
    
-   
+   undoupdate_first();
    command();// 명령 받기 창고지기 조정,u,r,n,e,s,f,d,t
    
 }
@@ -87,19 +88,26 @@ void command()
    switch(usr)
 {
    case 'h':
+	undoupdate();
    left();
    break;
          
    case 'j':
+   	undoupdate();
    down();
+   
    break;
 
    case 'k':
+   	undoupdate();
    up();
+   
    break;
 
    case 'l':
+   	undoupdate();
    right();
+   
    break;
 
    case 'e':
@@ -121,14 +129,7 @@ void command()
    break;
 
    case 'r':
-   	k=stage;
-		player_x[k]=Copy_player_x[k];
-		player_y[k]=Copy_player_y[k];
-		for(i=0;i<max_y[k];i++){
-			for(j=0;max_x[k];j++){
-			map[k][j][i]=map_Copy[k][j][i];
-			}
-		}
+	reply();
    break;
 
    case 'f':
@@ -161,6 +162,17 @@ void command()
 } 
 }
 
+void reply(){
+	int i,j,k;
+	k=stage;
+		player_x[k]=Copy_player_x[k];
+		player_y[k]=Copy_player_y[k];
+		for(i=0;i<max_y[k];i++){
+			for(j=0;max_x[k];j++){
+			map[k][j][i]=map_Copy[k][j][i];
+			}
+		}
+}
 
 void display()
 {
@@ -189,7 +201,6 @@ void loadMap(){
 	}
     while(stop==0) {
         fscanf(fp,"%c",&temp);
-        printf("%c", temp);
         if(temp=='e'){
             max_x[STAGE]=max_x[STAGE]/max_y[STAGE];
         	stop++;
