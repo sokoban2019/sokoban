@@ -14,25 +14,28 @@ void up();
 void down();
 void right();
 void left();
-void new();//*
-void undo();//*
-//void replay();
+void new();
+void undo();
+void replay();
 //void file();
-void display();//ëª…ë ¹ì–´ ì„¤ëª…*
+void display();//¸í·É¾î ¼³¸í*
 //void top();
-void undoupdate();//*ì›€ì§ì¼ë•Œë§ˆë‹¤ undomapë°€ì–´ì„œ ë„£ì–´ì£¼ê¸°
-void undoupdate_first();//* ìŠ¤í…Œì´ì§€ ì‹œì‘í• ë•Œ undomapì´ˆê¸°í™”í•´ì£¼ëŠ” ê³¼ì •
+void undoupdate();//*¿òÁ÷ÀÏ¶§¸¶´Ù undomap¹Ğ¾î¼­ ³Ö¾îÁÖ±â
+void undoupdate_first();//* ½ºÅ×ÀÌÁö ½ÃÀÛÇÒ¶§ undomapÃÊ±âÈ­ÇØÁÖ´Â °úÁ¤
+void Copy();
 
 
-int stage = 0,move;
+int stage = 0,move,STAGE=0;
 char map[5][30][30];
+char map_Copy[5][30][30];
 char undomap[5][30][30];
 char Original_map[5][30][30];
 int player_x[5],player_y[5];
 int max_x[5]={0},max_y[5]={0};
 int undocount=5;
-char USER[100][11];
-int userturn=0;   
+char USER[11];
+int Copy_player_x[5]={0},Copy_player_y[5]={0};
+
 
 int getch(void){
     int ch;
@@ -52,13 +55,9 @@ int getch(void){
 int main()
 {
    int mapcheck;
-//   printf("1");
    loadMap();
-//   printf("asd");
-
-   
-//   printf("asd");
-   mapcheck=map_Check();//ë§µ ì¶œë ¥ + ë³´ë¬¼ ê°¯ìˆ˜ í™•ì¸í•´ì„œ ë§ìœ¼ë©´ return 1 í‹€ë¦¬ë©´ return 0
+   Copy();
+   mapcheck=map_Check();//¸Ê Ãâ·Â + º¸¹° °¹¼ö È®ÀÎÇØ¼­ ¸ÂÀ¸¸é return 1 Æ²¸®¸é return 0
         if(!mapcheck)
          {
                  printf("error");
@@ -66,23 +65,24 @@ int main()
           }
 
    printf("Start../nInput name :");
-   scanf("%s",USER[userturn]);//userturn ë§ˆì§€ë§‰ì— ì¦ê°€ì‹œí‚¤ëŠ”ê±° ìŠì§€ë§
-   printf("\nHello %s/n",USER[userturn]);
+   scanf("%s",USER);
+   printf("\nHello %s/n",USER);
    
    
-   command();// ëª…ë ¹ ë°›ê¸° ì°½ê³ ì§€ê¸° ì¡°ì •,u,r,n,e,s,f,d,t
+   command();// ¸í·É ¹Ş±â Ã¢°íÁö±â Á¶Á¤,u,r,n,e,s,f,d,t
    
 }
 
 void command()
 {
    char usr;
+   int i,j,k;
 
    while(1)
 {
 
    prtMap();
-   usr=getch();//ìë™ ë°˜í™˜
+   usr=getch();//ÀÚµ¿ ¹İÈ¯
    
    switch(usr)
 {
@@ -104,7 +104,7 @@ void command()
 
    case 'e':
       //save();
-      printf("SEE YOU...%s",USER[userturn]);
+      printf("SEE YOU...%s",USER);
       exit(1);
       break;
 
@@ -121,7 +121,14 @@ void command()
    break;
 
    case 'r':
-   //replay();
+   	k=stage;
+		player_x[k]=Copy_player_x[k];
+		player_y[k]=Copy_player_y[k];
+		for(i=0;i<max_y[k];i++){
+			for(j=0;max_x[k];j++){
+			map[k][j][i]=map_Copy[k][j][i];
+			}
+		}
    break;
 
    case 'f':
@@ -138,10 +145,10 @@ void command()
 
 }
    
-   /*
-   stage=stage+checkclear();// ë³´ë¬¼ì„ ëª¨ë‘ ì •ë¦¬í–ˆëŠ”ì§€ í™•ì¸, ë§Œì•½ ë‹¤ ì •ë¦¬í–ˆë‹¤ë©´ return 1
-   //save();//í˜„ì¬ ìƒíƒœ ì €ì¥
-   undoupdate_first();//stageë„˜ì–´ê°€ë‹ˆê¹Œ undomap ì•„ì˜ˆ ì´ˆê¸°í™”
+   
+   stage=stage+checkclear();// º¸¹°À» ¸ğµÎ Á¤¸®Çß´ÂÁö È®ÀÎ, ¸¸¾à ´Ù Á¤¸®Çß´Ù¸é return 1
+   //save();//ÇöÀç »óÅÂ ÀúÀå
+ //  undoupdate_first();//stage³Ñ¾î°¡´Ï±î undomap ¾Æ¿¹ ÃÊ±âÈ­
    
    if(stage==6)
 {
@@ -149,7 +156,7 @@ void command()
    exit(1);
 
 }
-*/
+
 
 } 
 }
@@ -157,7 +164,7 @@ void command()
 
 void display()
 {
-        printf("h(ì™¼ìª½), j(ì•„ë˜), k(ìœ„), l(ì˜¤ë¥¸ìª½)\n");
+        printf("h(¿ŞÂÊ), j(¾Æ·¡), k(À§), l(¿À¸¥ÂÊ)\n");
         printf("u(undo)\n");
         printf("r(replay)\n");
         printf("n(new)\n");
@@ -172,14 +179,19 @@ void display()
 
 void loadMap(){   
    FILE *fp = fopen("map1.txt","r");
-    int i = 0, j=0,n_time=0,stop=0;
+    int i = 0, j=0,n_time=0,stop=0,STAGE=0;
     char temp;
-    
+
+	for (int k = 0; k < 5; k++)
+	{
+		max_x[k] = 0 ;
+		max_y[k] = 0 ;
+	}
     while(stop==0) {
         fscanf(fp,"%c",&temp);
         printf("%c", temp);
         if(temp=='e'){
-            max_x[stage]=max_x[stage]/max_y[stage];
+            max_x[STAGE]=max_x[STAGE]/max_y[STAGE];
         	stop++;
         }
         else if(temp=='1'){
@@ -189,38 +201,52 @@ void loadMap(){
            j=0;
            i=0;
            n_time=0;
-           max_x[stage]=max_x[stage]/max_y[stage];
-            stage++;
+           max_x[STAGE]=max_x[STAGE]/max_y[STAGE];
+            STAGE++;
         }
         else {
 			if(temp=='@'){
-          		player_x[stage]=i;
-          		player_y[stage]=j;
+          		player_x[STAGE]=i;
+          		player_y[STAGE]=j;
          	}
          	if(temp=='\n'){
             	if(n_time==0){
                
             	}
             	else if(n_time>=1){
-               		map[stage][i][j]='\n';
-               		Original_map[stage][i][j] = '\n';
+               		map[STAGE][i][j]='\n';
+               		Original_map[STAGE][i][j] = '\n';
                		j++;
                		i=0;
-               		max_y[stage]++;
+               		max_y[STAGE]++;
             	}
             	
             	n_time++;
             }
             
-            map[stage][i][j] = temp;
-            Original_map[stage][i][j] = (temp == '@' || temp == '$') ? '.' : temp;
-            max_x[stage]++;
+            map[STAGE][i][j] = temp;
+            Original_map[STAGE][i][j] = (temp == '@' || temp == '$') ? '.' : temp;
+            max_x[STAGE]++;
             i++;
         }
     }
     
 	fclose(fp);
 	return;
+}
+
+void Copy(){
+	int k=0,i,j;
+	while(k<5){
+		Copy_player_x[k]=player_x[k];
+		Copy_player_y[k]=player_y[k];
+		for(i=0;i<max_y[k];i++){
+			for(j=0;max_x[k];j++){
+			map_Copy[k][j][i]=map[k][j][i];
+			}
+		}
+		k++;
+	}
 }
 
 void prtMap()
@@ -242,7 +268,7 @@ void prtMap()
 
 int map_Check()
 {
-//	printf("test");
+
 	   int box_cnt[5],depository[5];
    
    for(int i=0;i<5;i++)
@@ -281,52 +307,59 @@ int checkclear()
 {
    
    
-   switch(stage)
+   if(stage==0)
    {
-
-   case 0:
-      if(map[0][1][12]=='$'&& map[0][5][2]=='$'&& map[0][7][18]=='$'&& map[0][11][8]=='$')
+   	 if(map[0][1][12]=='$'&& map[0][5][2]=='$'&& map[0][7][18]=='$'&& map[0][11][8]=='$')
       {
-         undocount=5;//í´ë¦¬ì–´í–ˆìœ¼ë‹ˆê¹Œ undocount ì´ˆê¸°í™”
-         return 1;   
-      }
-      break; 
-   case 1:
-      if(map[1][3][7]=='$'&& map[1][5][7]=='$'&& map[1][9][2]=='$'&& map[1][9][5]=='$')
-                {
+         undocount=5;//Å¬¸®¾îÇßÀ¸´Ï±î undocount ÃÊ±âÈ­
+         return 1;
+	}
+        
+	}
+       
+   if(stage==1)
+    {
+	  if(map[1][3][7]=='$'&& map[1][5][7]=='$'&& map[1][9][2]=='$'&& map[1][9][5]=='$')
+   {
          undocount=5;
          return 1;
       }
-      break;
-   case 2:
+	  }
+      
+   if(stage==2)   
+   {
+   
       if(map[2][1][15]=='$'&& map[2][6][2]=='$'&& map[2][9][25]=='$'&& map[2][14][11]=='$')
                 {
          undocount=5;
          return 1;
       }
-      break;
-   case 3:
+  }
+      
+   if(stage==3)
+   {
+   
       if(map[3][3][6]=='$'&& map[3][3][7]=='$'&& map[3][4][6]=='$'&& map[3][4][7]=='$'&& map[3][6][6]=='$'&& map[3][6][7]=='$' && map[3][7][6]=='$' && map[3][7][7]=='$')
                 {   
          undocount=5;
          return 1;
       }
-      break;
-   case 4:
-       if(map[4][2][6]=='$'&& map[4][2][7]=='$'&& map[4][3][6]=='$'&& map[4][3][7]=='$')
+  }
+      if(stage==4)
+      {
+        if(map[4][2][6]=='$'&& map[4][2][7]=='$'&& map[4][3][6]=='$'&& map[4][3][7]=='$')
                  {
-         //ê²Œì„ ëë‚¬ìœ¼ë‹ˆê¹Œ undocountì´ˆê¸°í™” ì•ˆí•´ë„ ê´œì¶˜
+         //°ÔÀÓ ³¡³µÀ¸´Ï±î undocountÃÊ±âÈ­ ¾ÈÇØµµ ±¦Ãá
          return 1;
 
        }
-       break;
+   }
+       
 
 
    }
-
-
    
-}
+
 
 void new()
 {
@@ -337,23 +370,23 @@ void new()
    prtMap();
    
 }
-//map[stage][i][j] xì¶• i, yì¶• j
+//map[stage][i][j] xÃà i, yÃà j
 
 void left()
 {
    int dx = 1;
-   // ë²½ì¸ ê²½ìš° 
+   // º®ÀÎ °æ¿ì 
    if(map[stage][player_x[stage] - dx][player_y[stage]] == '#') {
 		move++;
    }
    else {
-   		// ë³´ë¬¼ì„ ë¯¸ëŠ” ê²½ ìš° 
+   		// º¸¹°À» ¹Ì´Â °æ ¿ì 
 		if(map[stage][player_x[stage] - dx][player_y[stage]] == '$') {
 			if(map[stage][player_x[stage] - dx - dx][player_y[stage]] == '#' || map[stage][player_x[stage] - dx - dx][player_y[stage]] == '$') {
 				move++;
 			}
 			else {
-				// ê³µê°„ì— ë³´ë¬¼ì„ ë„£ëŠ” ê²½ìš° 
+				// °ø°£¿¡ º¸¹°À» ³Ö´Â °æ¿ì 
 				if(map[stage][player_x[stage] - dx - dx][player_y[stage]] == 'O') {
 					move++;
 					map[stage][player_x[stage]][player_y[stage]] = Original_map[stage][player_x[stage]][player_y[stage]];
@@ -382,18 +415,18 @@ void left()
 void up()
 {
    int dy = 1;
-   // ë²½ì¸ ê²½ìš° 
+   // º®ÀÎ °æ¿ì 
    if(map[stage][player_x[stage]][player_y[stage] - dy] == '#') {
 		move++;
    }
    else {
-   		// ë³´ë¬¼ì„ ë¯¸ëŠ” ê²½ ìš° 
+   		// º¸¹°À» ¹Ì´Â °æ ¿ì 
 		if(map[stage][player_x[stage]][player_y[stage] - dy] == '$') {
 			if(map[stage][player_x[stage]][player_y[stage] - dy - dy] == '#' || map[stage][player_x[stage]][player_y[stage] - dy - dy] == '$') {
 				move++;
 			}
 			else {
-				// ê³µê°„ì— ë³´ë¬¼ì„ ë„£ëŠ” ê²½ìš° 
+				// °ø°£¿¡ º¸¹°À» ³Ö´Â °æ¿ì 
 				if(map[stage][player_x[stage]][player_y[stage] - dy - dy] == 'O') {
 					move++;
 					map[stage][player_x[stage]][player_y[stage]] = Original_map[stage][player_x[stage]][player_y[stage]];
@@ -422,18 +455,18 @@ void up()
 void down()
 {
    int dy = 1;
-   // ë²½ì¸ ê²½ìš° 
+   // º®ÀÎ °æ¿ì 
    if(map[stage][player_x[stage]][player_y[stage] + dy] == '#') {
 		move++;
    }
    else {
-   		// ë³´ë¬¼ì„ ë¯¸ëŠ” ê²½ ìš° 
+   		// º¸¹°À» ¹Ì´Â °æ ¿ì 
 		if(map[stage][player_x[stage]][player_y[stage] + dy] == '$') {
 			if(map[stage][player_x[stage]][player_y[stage] + dy + dy] == '#' || map[stage][player_x[stage]][player_y[stage] + dy + dy] == '$') {
 				move++;
 			}
 			else {
-				// ê³µê°„ì— ë³´ë¬¼ì„ ë„£ëŠ” ê²½ìš° 
+				// °ø°£¿¡ º¸¹°À» ³Ö´Â °æ¿ì 
 				if(map[stage][player_x[stage]][player_y[stage] + dy + dy] == 'O') {
 					move++;
 					map[stage][player_x[stage]][player_y[stage]] = Original_map[stage][player_x[stage]][player_y[stage]];
@@ -462,18 +495,18 @@ void down()
 void right()
 {
    int dx = 1;
-   // ë²½ì¸ ê²½ìš° 
+   // º®ÀÎ °æ¿ì 
    if(map[stage][player_x[stage] + dx][player_y[stage]] == '#') {
 		move++;
    }
    else {
-   		// ë³´ë¬¼ì„ ë¯¸ëŠ” ê²½ ìš° 
+   		// º¸¹°À» ¹Ì´Â °æ ¿ì 
 		if(map[stage][player_x[stage] + dx][player_y[stage]] == '$') {
 			if(map[stage][player_x[stage] + dx + dx][player_y[stage]] == '#' || map[stage][player_x[stage] + dx + dx][player_y[stage]] == '$') {
 				move++;
 			}
 			else {
-				// ê³µê°„ì— ë³´ë¬¼ì„ ë„£ëŠ” ê²½ìš° 
+				// °ø°£¿¡ º¸¹°À» ³Ö´Â °æ¿ì 
 				if(map[stage][player_x[stage] + dx + dx][player_y[stage]] == 'O') {
 					move++;
 					map[stage][player_x[stage]][player_y[stage]] = Original_map[stage][player_x[stage]][player_y[stage]];
@@ -499,7 +532,7 @@ void right()
    }
 }
 
-void undoupdate_first()//ì²˜ìŒ undomap ì´ˆê¸°í™”í•´ì£¼ê¸°
+void undoupdate_first()//Ã³À½ undomap ÃÊ±âÈ­ÇØÁÖ±â
 {
    
    
@@ -516,7 +549,7 @@ void undoupdate_first()//ì²˜ìŒ undomap ì´ˆê¸°í™”í•´ì£¼ê¸°
 
 }
 
-void undoupdate()//undomap ì›€ì§ì¼ë•Œë§ˆë‹¤ ë°€ì–´ì„œ ë„£ì–´ì£¼ê¸°
+void undoupdate()//undomap ¿òÁ÷ÀÏ¶§¸¶´Ù ¹Ğ¾î¼­ ³Ö¾îÁÖ±â
 {
 
    for(int c=5;c>1;c--)
@@ -544,7 +577,7 @@ void undo()
 {
    if(undocount==0)
    {   
-      printf("undoë¥¼ ë‹¤ ì‚¬ìš©í•˜ì…¨ìŠµë‹ˆë‹¤.");
+      printf("undo finishgc");
       return ;
    }
 
@@ -569,40 +602,12 @@ void undo()
 
    undocount--;
 }
-//
-//void file()
-//{
-//   FILE *fileload;
-//   char ch;
-//   int x = 0, y = 0;
-//
-//   fileload = fopen("sokoban.txt", "r");
-//   
-//   if (fileload == NULL)
-//      exit(1); //ë¡œë“œí•œ íŒŒì¼ì´ ë¹ˆ íŒŒì¼ì´ë©´ í”„ë¡œê·¸ë¨ ì¢…ë£Œ
-//   else
-//   {
-//      // sokoban.txtì—ì„œ ìœ ì €ëª…, ì–¸ë‘íšŸìˆ˜, ì›€ì§ì„íšŸìˆ˜, ìŠ¤í…Œì´ì§€ ë°›ì•„ì˜¤ê¸°
-//      fscanf(fileload, "%s\n%d\n%d\n%d", &USER, &undocount, &move, &stage);
-//      fscanf(fileload, "\n", &ch);
-//      // ë§µ ë°›ì•„ì˜¤ê¸°
-//      while(fscanf(fileload, "%c", &ch) != EOF){
-//         map[stage][y][x] = ch;
-//         if (ch == '\n'){
-//            y++;
-//            x=0;
-//         }
-//         else
-//            x++;
-//      }
-//   }
-//}
 
 //void Save()
 //{
 //   FILE *save;
 //
-//   save = fopen("sokoban.txt", "w"); //ì“°ê¸° í˜•ì‹
+//   save = fopen("sokoban.txt", "w"); //¾²±â Çü½Ä
 //   
 //   fprintf(save, "%s\n", USER);
 //   fprintf(save, "%d\n", undocount);
@@ -620,7 +625,7 @@ void undo()
 //
 //   fclose(save);
 //}
-
+//
 //void file()
 //{
 //   FILE *fileload;
@@ -630,16 +635,20 @@ void undo()
 //   fileload = fopen("sokoban.txt", "r");
 //   
 //   if (fileload == NULL)
-//      exit(1); //ë¡œë“œí•œ íŒŒì¼ì´ ë¹ˆ íŒŒì¼ì´ë©´ í”„ë¡œê·¸ë¨ ì¢…ë£Œ
+//      exit(1); //·ÎµåÇÑ ÆÄÀÏÀÌ ºó ÆÄÀÏÀÌ¸é ÇÁ·Î±×·¥ Á¾·á
 //   else
 //   {
-//      // sokoban.txtì—ì„œ ìœ ì €ëª…, ì–¸ë‘íšŸìˆ˜, ì›€ì§ì„íšŸìˆ˜, ìŠ¤í…Œì´ì§€ ë°›ì•„ì˜¤ê¸°
+//      // sokoban.txt¿¡¼­ À¯Àú¸í, ¾ğµÎÈ½¼ö, ¿òÁ÷ÀÓÈ½¼ö, ½ºÅ×ÀÌÁö ¹Ş¾Æ¿À±â
 //      fscanf(fileload, "%s\n%d\n%d\n%d", &USER, &undocount, &move, &stage);
 //      fscanf(fileload, "\n", &ch);
-//      // ë§µ ë°›ì•„ì˜¤ê¸°
+//      // ¸Ê ¹Ş¾Æ¿À±â
 //      while(fscanf(fileload, "%c", &ch) != EOF){
 //         map[stage][y][x] = ch;
-//         if (ch == '\n'){
+//         if (ch == '@'){
+//            player_x[x] = x;
+//            player_y[y] = y;
+//         }
+//         else if (ch == '\n'){
 //            y++;
 //            x=0;
 //         }
@@ -647,41 +656,46 @@ void undo()
 //            x++;
 //      }
 //   }
+//   fclose(fileload);
 //}
-//
+
 //void replay()
 //{
-//                FILE*fp=fopen("map1.txt","r");
-//                int i=0,j=0;
-//                int stop=0;
-//                fscanf(fp,"%c",&temp);
-//                while(stop==0){
-//                        if(temp==stage){
-//                                        if(temp==stage+1){
-//                                                stop++;
-//                                        }
-//                                if(temp=='@'){
-//                                        player_x[stage]=i;
-//                                        player_y[stage]=j;
-//                                }
-//                                else if(temp=='\n'){
-//                                        if(n_time==0){
-//                                        }
-//                                        else if(n_time>=1){
-//                                                map[stage][i][j]='\n';
-//                                                j++;
-//                                                i=0;
-//                                                max_y[stage]++;
-//                                        }
-//                                        n_time++;
-//                                }
-//                                map[stage][i][j] = temp;
-//                                max_x[stage]++;
-//                                i++;
-//                        }
-//                }
-//                fclose(fp);
-//                return ;
+//	FILE*fp=fopen("map1.txt","r");
+//	int i=0,j=0;
+//	int stop=0;
+//	char temp;
+//	int n_time;
+//	fscanf(fp,"%c",&temp);
+//	while(stop==0){
+//		if(temp==stage){
+//			if(temp==stage+1){
+// 				stop++;
+// 			}
+// 		}
+//		if(temp=='@'){
+//			player_x[stage]=i;
+//			player_y[stage]=j;
+// 		}
+// 		else if(temp=='\n'){
+//			if(n_time==0){
+//			}
+//		}
+//		else if(n_time>=1){
+// 			map[stage][i][j]='\n';
+// 			j++;
+// 			i=0;
+//			max_y[stage]++;
+//		}
+//		n_time++;
+//	}	
+//	map[stage][i][j] = temp;
+// 	max_x[stage]++;
+//	i++;
+//
+// }
+// fclose(fp);
+//return ;
 //
 //}
 
@@ -708,3 +722,4 @@ void undo()
 //		t5();
 //	}
 //}
+
