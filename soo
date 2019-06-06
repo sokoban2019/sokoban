@@ -17,10 +17,10 @@ void left();
 void New();
 void undo();
 void file();
-void display();//¸í·É¾î ¼³¸í*
+void display();//ëª…ë ¹ì–´ ì„¤ëª…*
 //void top();
-void undoupdate();//*¿òÁ÷ÀÏ¶§¸¶´Ù undomap¹Ğ¾î¼­ ³Ö¾îÁÖ±â
-void undoupdate_first();//* ½ºÅ×ÀÌÁö ½ÃÀÛÇÒ¶§ undomapÃÊ±âÈ­ÇØÁÖ´Â °úÁ¤
+void undoupdate();//*ì›€ì§ì¼ë•Œë§ˆë‹¤ undomapë°€ì–´ì„œ ë„£ì–´ì£¼ê¸°
+void undoupdate_first();//* ìŠ¤í…Œì´ì§€ ì‹œì‘í• ë•Œ undomapì´ˆê¸°í™”í•´ì£¼ëŠ” ê³¼ì •
 void re();
 
 
@@ -54,7 +54,7 @@ int main()
 	int i,j,k;
    int mapcheck;
    loadMap();
-   mapcheck=map_Check();//¸Ê Ãâ·Â + º¸¹° °¹¼ö È®ÀÎÇØ¼­ ¸ÂÀ¸¸é return 1 Æ²¸®¸é return 0
+   mapcheck=map_Check();//ë§µ ì¶œë ¥ + ë³´ë¬¼ ê°¯ìˆ˜ í™•ì¸í•´ì„œ ë§ìœ¼ë©´ return 1 í‹€ë¦¬ë©´ return 0
         if(!mapcheck)
          {
                  printf("error");
@@ -65,7 +65,7 @@ int main()
    scanf("%s",USER);
    printf("\nHello %s/n",USER);
    undoupdate_first();
-   command();// ¸í·É ¹Ş±â Ã¢°íÁö±â Á¶Á¤,u,r,n,e,s,f,d,t
+   command();// ëª…ë ¹ ë°›ê¸° ì°½ê³ ì§€ê¸° ì¡°ì •,u,r,n,e,s,f,d,t
    
 }
 
@@ -78,7 +78,7 @@ void command()
 {
 
    prtMap();
-   usr=getch();//ÀÚµ¿ ¹İÈ¯
+   usr=getch();//ìë™ ë°˜í™˜
    
    switch(usr)
 {
@@ -142,9 +142,9 @@ void command()
 }
    
    
-   stage=stage+checkclear();// º¸¹°À» ¸ğµÎ Á¤¸®Çß´ÂÁö È®ÀÎ, ¸¸¾à ´Ù Á¤¸®Çß´Ù¸é return 1
-   Save();//ÇöÀç »óÅÂ ÀúÀå
-	undoupdate_first();//stage³Ñ¾î°¡´Ï±î undomap ¾Æ¿¹ ÃÊ±âÈ­
+   stage=stage+checkclear();// ë³´ë¬¼ì„ ëª¨ë‘ ì •ë¦¬í–ˆëŠ”ì§€ í™•ì¸, ë§Œì•½ ë‹¤ ì •ë¦¬í–ˆë‹¤ë©´ return 1
+   Save();//í˜„ì¬ ìƒíƒœ ì €ì¥
+	undoupdate_first();//stageë„˜ì–´ê°€ë‹ˆê¹Œ undomap ì•„ì˜ˆ ì´ˆê¸°í™”
    
    if(stage==6)
 {
@@ -161,7 +161,7 @@ void command()
 
 void display()
 {
-        printf("h(¿ŞÂÊ), j(¾Æ·¡), k(À§), l(¿À¸¥ÂÊ)\n");
+        printf("h(ì™¼ìª½), j(ì•„ë˜), k(ìœ„), l(ì˜¤ë¥¸ìª½)\n");
         printf("u(undo)\n");
         printf("r(replay)\n");
         printf("n(new)\n");
@@ -293,7 +293,7 @@ int checkclear()
    {
    	 if(map[0][1][12]=='$'&& map[0][5][2]=='$'&& map[0][7][18]=='$'&& map[0][11][8]=='$')
       {
-         undocount=5;//Å¬¸®¾îÇßÀ¸´Ï±î undocount ÃÊ±âÈ­
+         undocount=5;//í´ë¦¬ì–´í–ˆìœ¼ë‹ˆê¹Œ undocount ì´ˆê¸°í™”
          return 1;
 	}
         
@@ -331,7 +331,7 @@ int checkclear()
       {
         if(map[4][2][6]=='$'&& map[4][2][7]=='$'&& map[4][3][6]=='$'&& map[4][3][7]=='$')
                  {
-         //°ÔÀÓ ³¡³µÀ¸´Ï±î undocountÃÊ±âÈ­ ¾ÈÇØµµ ±¦Ãá
+         //ê²Œì„ ëë‚¬ìœ¼ë‹ˆê¹Œ undocountì´ˆê¸°í™” ì•ˆí•´ë„ ê´œì¶˜
          return 1;
 
        }
@@ -356,23 +356,23 @@ void New()
    prtMap();
    
 }
-//map[stage][i][j] xÃà i, yÃà j
+//map[stage][i][j] xì¶• i, yì¶• j
 
 void left()
 {
    int dx = 1;
-   // º®ÀÎ °æ¿ì 
+   // ë²½ì¸ ê²½ìš° 
    if(map[stage][player_x[stage] - dx][player_y[stage]] == '#') {
 		move++;
    }
    else {
-   		// º¸¹°À» ¹Ì´Â °æ ¿ì 
+   		// ë³´ë¬¼ì„ ë¯¸ëŠ” ê²½ ìš° 
 		if(map[stage][player_x[stage] - dx][player_y[stage]] == '$') {
 			if(map[stage][player_x[stage] - dx - dx][player_y[stage]] == '#' || map[stage][player_x[stage] - dx - dx][player_y[stage]] == '$') {
 				move++;
 			}
 			else {
-				// °ø°£¿¡ º¸¹°À» ³Ö´Â °æ¿ì 
+				// ê³µê°„ì— ë³´ë¬¼ì„ ë„£ëŠ” ê²½ìš° 
 				if(map[stage][player_x[stage] - dx - dx][player_y[stage]] == 'O') {
 					move++;
 					map[stage][player_x[stage]][player_y[stage]] = Original_map[stage][player_x[stage]][player_y[stage]];
@@ -401,18 +401,18 @@ void left()
 void up()
 {
    int dy = 1;
-   // º®ÀÎ °æ¿ì 
+   // ë²½ì¸ ê²½ìš° 
    if(map[stage][player_x[stage]][player_y[stage] - dy] == '#') {
 		move++;
    }
    else {
-   		// º¸¹°À» ¹Ì´Â °æ ¿ì 
+   		// ë³´ë¬¼ì„ ë¯¸ëŠ” ê²½ ìš° 
 		if(map[stage][player_x[stage]][player_y[stage] - dy] == '$') {
 			if(map[stage][player_x[stage]][player_y[stage] - dy - dy] == '#' || map[stage][player_x[stage]][player_y[stage] - dy - dy] == '$') {
 				move++;
 			}
 			else {
-				// °ø°£¿¡ º¸¹°À» ³Ö´Â °æ¿ì 
+				// ê³µê°„ì— ë³´ë¬¼ì„ ë„£ëŠ” ê²½ìš° 
 				if(map[stage][player_x[stage]][player_y[stage] - dy - dy] == 'O') {
 					move++;
 					map[stage][player_x[stage]][player_y[stage]] = Original_map[stage][player_x[stage]][player_y[stage]];
@@ -441,18 +441,18 @@ void up()
 void down()
 {
    int dy = 1;
-   // º®ÀÎ °æ¿ì 
+   // ë²½ì¸ ê²½ìš° 
    if(map[stage][player_x[stage]][player_y[stage] + dy] == '#') {
 		move++;
    }
    else {
-   		// º¸¹°À» ¹Ì´Â °æ ¿ì 
+   		// ë³´ë¬¼ì„ ë¯¸ëŠ” ê²½ ìš° 
 		if(map[stage][player_x[stage]][player_y[stage] + dy] == '$') {
 			if(map[stage][player_x[stage]][player_y[stage] + dy + dy] == '#' || map[stage][player_x[stage]][player_y[stage] + dy + dy] == '$') {
 				move++;
 			}
 			else {
-				// °ø°£¿¡ º¸¹°À» ³Ö´Â °æ¿ì 
+				// ê³µê°„ì— ë³´ë¬¼ì„ ë„£ëŠ” ê²½ìš° 
 				if(map[stage][player_x[stage]][player_y[stage] + dy + dy] == 'O') {
 					move++;
 					map[stage][player_x[stage]][player_y[stage]] = Original_map[stage][player_x[stage]][player_y[stage]];
@@ -481,18 +481,18 @@ void down()
 void right()
 {
    int dx = 1;
-   // º®ÀÎ °æ¿ì 
+   // ë²½ì¸ ê²½ìš° 
    if(map[stage][player_x[stage] + dx][player_y[stage]] == '#') {
 		move++;
    }
    else {
-   		// º¸¹°À» ¹Ì´Â °æ ¿ì 
+   		// ë³´ë¬¼ì„ ë¯¸ëŠ” ê²½ ìš° 
 		if(map[stage][player_x[stage] + dx][player_y[stage]] == '$') {
 			if(map[stage][player_x[stage] + dx + dx][player_y[stage]] == '#' || map[stage][player_x[stage] + dx + dx][player_y[stage]] == '$') {
 				move++;
 			}
 			else {
-				// °ø°£¿¡ º¸¹°À» ³Ö´Â °æ¿ì 
+				// ê³µê°„ì— ë³´ë¬¼ì„ ë„£ëŠ” ê²½ìš° 
 				if(map[stage][player_x[stage] + dx + dx][player_y[stage]] == 'O') {
 					move++;
 					map[stage][player_x[stage]][player_y[stage]] = Original_map[stage][player_x[stage]][player_y[stage]];
@@ -518,7 +518,7 @@ void right()
    }
 }
 
-void undoupdate_first()//Ã³À½ undomap ÃÊ±âÈ­ÇØÁÖ±â
+void undoupdate_first()//ì²˜ìŒ undomap ì´ˆê¸°í™”í•´ì£¼ê¸°
 {
    
    
@@ -535,7 +535,7 @@ void undoupdate_first()//Ã³À½ undomap ÃÊ±âÈ­ÇØÁÖ±â
 
 }
 
-void undoupdate()//undomap ¿òÁ÷ÀÏ¶§¸¶´Ù ¹Ğ¾î¼­ ³Ö¾îÁÖ±â
+void undoupdate()//undomap ì›€ì§ì¼ë•Œë§ˆë‹¤ ë°€ì–´ì„œ ë„£ì–´ì£¼ê¸°
 {
 
    for(int c=5;c>1;c--)
@@ -593,7 +593,7 @@ void Save()
 {
    FILE *save;
 
-   save = fopen("sokoban.txt", "w"); //¾²±â Çü½Ä
+   save = fopen("sokoban.txt", "w"); //ì“°ê¸° í˜•ì‹
    
    fprintf(save, "%s\n", USER);
    fprintf(save, "%d\n", undocount);
@@ -620,13 +620,13 @@ void file()
    fileload = fopen("sokoban.txt", "r");
    
    if (fileload == NULL)
-      exit(1); //·ÎµåÇÑ ÆÄÀÏÀÌ ºó ÆÄÀÏÀÌ¸é ÇÁ·Î±×·¥ Á¾·á
+      exit(1); //ë¡œë“œí•œ íŒŒì¼ì´ ë¹ˆ íŒŒì¼ì´ë©´ í”„ë¡œê·¸ë¨ ì¢…ë£Œ
    else
    {
-      // sokoban.txt¿¡¼­ À¯Àú¸í, ¾ğµÎÈ½¼ö, ¿òÁ÷ÀÓÈ½¼ö, ½ºÅ×ÀÌÁö ¹Ş¾Æ¿À±â
+      // sokoban.txtì—ì„œ ìœ ì €ëª…, ì–¸ë‘íšŸìˆ˜, ì›€ì§ì„íšŸìˆ˜, ìŠ¤í…Œì´ì§€ ë°›ì•„ì˜¤ê¸°
       fscanf(fileload, "%s\n%d\n%d\n%d", &USER, &undocount, &move, &stage);
       fscanf(fileload, "\n", &ch);
-      // ¸Ê ¹Ş¾Æ¿À±â
+      // ë§µ ë°›ì•„ì˜¤ê¸°
       while(fscanf(fileload, "%c", &ch) != EOF){
          map[stage][y][x] = ch;
          if (ch == '@'){
