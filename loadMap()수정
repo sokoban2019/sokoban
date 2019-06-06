@@ -1,0 +1,57 @@
+void loadMap(){   
+   FILE *fp = fopen("map1.txt","r");
+    int i = 0, j=0,n_time=0,stop=0,STAGE=0;
+    char temp;
+
+	for (int k = 0; k < 5; k++)
+	{
+		max_x[k] = 0 ;
+		max_y[k] = 0 ;
+	}
+    while(stop==0) {
+        fscanf(fp,"%c",&temp);
+        printf("%c", temp);
+        if(temp=='e'){
+            max_x[STAGE]=max_x[STAGE]/max_y[STAGE];
+        	stop++;
+        }
+        else if(temp=='1'){
+                 
+      	}
+        else if(temp>='2' && temp<='5') {
+           j=0;
+           i=0;
+           n_time=0;
+           max_x[STAGE]=max_x[STAGE]/max_y[STAGE];
+            STAGE++;
+        }
+        else {
+			if(temp=='@'){
+          		player_x[STAGE]=i;
+          		player_y[STAGE]=j;
+         	}
+         	if(temp=='\n'){
+            	if(n_time==0){
+               
+            	}
+            	else if(n_time>=1){
+               		map[STAGE][i][j]='\n';
+               		Original_map[STAGE][i][j] = '\n';
+               		j++;
+               		i=0;
+               		max_y[STAGE]++;
+            	}
+            	
+            	n_time++;
+            }
+            
+            map[STAGE][i][j] = temp;
+            Original_map[STAGE][i][j] = (temp == '@' || temp == '$') ? '.' : temp;
+            max_x[STAGE]++;
+            i++;
+        }
+    }
+    
+	fclose(fp);
+	return;
+}
