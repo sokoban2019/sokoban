@@ -1,0 +1,22 @@
+display(){
+	
+	system("clear");
+	
+	printf("h(왼쪽), j(아래), k(위), l(오른쪽)\n");
+	printf("u(undo)\n");
+	printf("r(replay)\n");
+	printf("n(new)\n");
+	printf("e(exit)\n");
+	printf("s(save)\n");
+	printf("f(file load)\n");
+	printf("d(display help)\n");
+	printf("t(top)\n"); //키 설명
+	
+	char a = ' ';
+	while(a != '\n')
+	{
+		a = getch();
+	}
+
+	return;
+}
