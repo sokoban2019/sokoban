@@ -9,15 +9,14 @@ void prtMap();
 void command();
 int map_Check();
 int checkclear();
-//void Save();
+void Save();
 void up();
 void down();
 void right();
 void left();
 void New();
 void undo();
-//void replay();
-//void file();
+void file();
 void display();//명령어 설명*
 //void top();
 void undoupdate();//*움직일때마다 undomap밀어서 넣어주기
@@ -55,7 +54,6 @@ int main()
 	int i,j,k;
    int mapcheck;
    loadMap();
-   //Copy();
    mapcheck=map_Check();//맵 출력 + 보물 갯수 확인해서 맞으면 return 1 틀리면 return 0
         if(!mapcheck)
          {
@@ -108,13 +106,13 @@ void command()
    break;
 
    case 'e':
-      //save();
+      Save();
       printf("SEE YOU...%s",USER);
       exit(1);
       break;
 
    case 's':
-   //save();
+   Save();
    break;
 
    case 'n':
@@ -130,7 +128,7 @@ void command()
    break;
 
    case 'f':
-   //file();
+   file();
    break;
 
    case 'd':
@@ -145,8 +143,8 @@ void command()
    
    
    stage=stage+checkclear();// 보물을 모두 정리했는지 확인, 만약 다 정리했다면 return 1
-   //save();//현재 상태 저장
- //  undoupdate_first();//stage넘어가니까 undomap 아예 초기화
+   Save();//현재 상태 저장
+	undoupdate_first();//stage넘어가니까 undomap 아예 초기화
    
    if(stage==6)
 {
@@ -565,7 +563,7 @@ void undo()
 {
    if(undocount==0)
    {   
-      printf("undo finishgc");
+      printf("undo finished");
       return ;
    }
 
@@ -591,101 +589,62 @@ void undo()
    undocount--;
 }
 
-//void Save()
-//{
-//   FILE *save;
-//
-//   save = fopen("sokoban.txt", "w"); //쓰기 형식
-//   
-//   fprintf(save, "%s\n", USER);
-//   fprintf(save, "%d\n", undocount);
-//   fprintf(save, "%d\n", move);
-//   fprintf(save, "%d\n", stage);
-//   
-//   for(int i = 0; i < 30; i++)
-//   {
-//      for(int j = 0; j < 30; j++)
-//      {
-//         fprintf(save, "%c", map[stage][i][j]);
-//      }
-//   fprintf(save, "\n");
-//   }
-//
-//   fclose(save);
-//}
-//
-//void file()
-//{
-//   FILE *fileload;
-//   char ch;
-//   int x = 0, y = 0;
-//
-//   fileload = fopen("sokoban.txt", "r");
-//   
-//   if (fileload == NULL)
-//      exit(1); //로드한 파일이 빈 파일이면 프로그램 종료
-//   else
-//   {
-//      // sokoban.txt에서 유저명, 언두횟수, 움직임횟수, 스테이지 받아오기
-//      fscanf(fileload, "%s\n%d\n%d\n%d", &USER, &undocount, &move, &stage);
-//      fscanf(fileload, "\n", &ch);
-//      // 맵 받아오기
-//      while(fscanf(fileload, "%c", &ch) != EOF){
-//         map[stage][y][x] = ch;
-//         if (ch == '@'){
-//            player_x[x] = x;
-//            player_y[y] = y;
-//         }
-//         else if (ch == '\n'){
-//            y++;
-//            x=0;
-//         }
-//         else
-//            x++;
-//      }
-//   }
-//   fclose(fileload);
-//}
+void Save()
+{
+   FILE *save;
 
-//void replay()
-//{
-//	FILE*fp=fopen("map1.txt","r");
-//	int i=0,j=0;
-//	int stop=0;
-//	char temp;
-//	int n_time;
-//	fscanf(fp,"%c",&temp);
-//	while(stop==0){
-//		if(temp==stage){
-//			if(temp==stage+1){
-// 				stop++;
-// 			}
-// 		}
-//		if(temp=='@'){
-//			player_x[stage]=i;
-//			player_y[stage]=j;
-// 		}
-// 		else if(temp=='\n'){
-//			if(n_time==0){
-//			}
-//		}
-//		else if(n_time>=1){
-// 			map[stage][i][j]='\n';
-// 			j++;
-// 			i=0;
-//			max_y[stage]++;
-//		}
-//		n_time++;
-//	}	
-//	map[stage][i][j] = temp;
-// 	max_x[stage]++;
-//	i++;
-//
-// }
-// fclose(fp);
-//return ;
-//
-//}
+   save = fopen("sokoban.txt", "w"); //쓰기 형식
+   
+   fprintf(save, "%s\n", USER);
+   fprintf(save, "%d\n", undocount);
+   fprintf(save, "%d\n", move);
+   fprintf(save, "%d\n", stage);
+   
+   for(int i = 0; i < max_y[stage]; i++)
+   {
+      for(int j = 0; j < max_x[stage]; j++)
+      {
+         fprintf(save, "%c", map[stage][j][i]);
+      }
+   }
+
+   fclose(save);
+}
+
+void file()
+{
+   FILE *fileload;
+   char ch;
+   int x = 0, y = 0;
+
+   fileload = fopen("sokoban.txt", "r");
+   
+   if (fileload == NULL)
+      exit(1); //로드한 파일이 빈 파일이면 프로그램 종료
+   else
+   {
+      // sokoban.txt에서 유저명, 언두횟수, 움직임횟수, 스테이지 받아오기
+      fscanf(fileload, "%s\n%d\n%d\n%d", &USER, &undocount, &move, &stage);
+      fscanf(fileload, "\n", &ch);
+      // 맵 받아오기
+      while(fscanf(fileload, "%c", &ch) != EOF){
+         map[stage][y][x] = ch;
+         if (ch == '@'){
+            player_x[x] = x;
+            player_y[y] = y;
+         }
+         else if (ch == '\n'){
+            y++;
+            x=0;
+         }
+         else
+            x++;
+      }
+   }
+   fclose(fileload);
+}
+
+
 
 //void top(void){
 //
