@@ -1,0 +1,32 @@
+void file()
+{
+	FILE *fileload;
+	char ch;
+	int x = 0, y = 0;
+
+	fileload = fopen("sokoban.txt", "r");
+	
+	if (fileload == NULL)
+		exit(1); //로드한 파일이 빈 파일이면 프로그램 종료
+	else
+	{
+		// sokoban.txt에서 유저명, 언두횟수, 움직임횟수, 스테이지 받아오기
+		fscanf(fileload, "%s\n%d\n%d\n%d", &USER, &undocount, &move, &stage);
+		fscanf(fileload, "\n", &ch);
+		// 맵 받아오기
+		while(fscanf(fileload, "%c", &ch) != EOF){
+			map[stage][y][x] = ch;
+			if (ch == '@'){
+				player_x[x] = x;
+				player_y[y] = y;
+			}
+			else if (ch == '\n'){
+				y++;
+				x=0;
+			}
+			else
+				x++;
+		}
+	}
+	fclose(fileload);
+}
