@@ -1,0 +1,920 @@
+癤?include<stdio.h>
+#include<termio.h>
+#include<stdlib.h>
+
+void loadMap();
+void prtMap();
+void command();
+int map_Check();
+void checkclear();
+void Save();
+void up();
+void down();
+void right();
+void left();
+void New();
+void undo();
+void file();
+void display();
+void undoupdate();
+void undoupdate_first();
+void re();
+void SaveTop();
+void Top(int Top_num);
+
+
+
+int stage = 0, move, STAGE = 0;
+char map[5][30][30];
+char undomap[5][30][30];
+char Original_map[5][30][30];
+int player_x[5], player_y[5];
+int max_x[5] = { 0 }, max_y[5] = { 0 };
+int undocount = 5;
+char USER[11];
+char Copy_map[5][30][30];
+int Copy_player_x[5];
+int Copy_player_y[5];
+int Top_i = 0;
+int t_flg = 0;
+char rank_name[5][5][11];
+int rank_cnt[5][5];
+
+
+
+int getch(void) {
+	int ch;
+	struct termios buf, save;
+	tcgetattr(0, &save);
+	buf = save;
+	buf.c_lflag &= ~(ICANON | ECHO);
+	buf.c_cc[VMIN] = 1;
+	buf.c_cc[VTIME] = 0;
+	tcsetattr(0, TCSAFLUSH, &buf);
+	ch = getchar();
+	tcsetattr(0, TCSAFLUSH, &save);
+	return ch;
+}
+
+
+int main()
+{
+	int i, j, k;
+	int mapcheck;
+	loadMap();
+	mapcheck = map_Check();
+	if (!mapcheck)
+	{
+		printf("error");
+		return 0;
+	}
+
+	printf("Start..\nInput name :");
+	scanf("%s", USER);
+
+	undoupdate_first();
+	command();
+
+}
+
+void command()
+{
+	char usr;
+	int i, j, k;
+	char enter;
+	printf("tesasdt\n");
+
+	while (1)
+	{
+		prtMap();
+
+		usr = getch();
+
+		switch (usr)
+		{
+		case 'h':
+			undoupdate();
+			left();
+			break;
+
+		case 'j':
+			undoupdate();
+			down();
+			break;
+
+		case 'k':
+			undoupdate();
+			up();
+			break;
+
+		case 'l':
+			undoupdate();
+			right();
+			break;
+
+		case 'e':
+			Save();
+			printf("SEE YOU...%s", USER);
+			exit(1);
+			break;
+
+		case 's':
+			Save();
+			break;
+
+		case 'n':
+			New();
+			break;
+
+		case 'u':
+			undo();
+			break;
+
+		case 'r':
+			re();
+			break;
+
+		case 'f':
+			file();
+			break;
+
+		case 'd':
+			display();
+			break;
+
+		case 't':
+			if (t_flg == 0)
+			{
+				t_flg = 1;
+			}
+			enter = getch();
+			if (enter == '\n')
+				Top_i = 0; //t?몌궦 ?韜?귨깈?잞??삼궣??
+			else {
+				enter = getch();
+				printf(" ");
+				switch (enter)
+				{
+					// enter ?곤궕???1, 2, 3, 4, 5????곤깺?울꺃 ?곤궋?곤궋????쏙궨?낉깤??뚳긽??Top ?껓깴?뤄긾
+				case '1':
+					printf("1");
+					Top_i = 1;
+					break;
+
+				case '2':
+					printf("2");
+					Top_i = 2;
+					break;
+
+				case '3':
+					printf("3");
+					Top_i = 3;
+					break;
+
+				case '4':
+					printf("4");
+					Top_i = 4;
+					break;
+
+				case '5':
+					printf("5");
+					Top_i = 5;
+					break;
+
+					// enter ?곤궕???'\n' ?곤궠?뉛깲????곤깺?울꺃 ??셌?Top ?껓깴?뤄긾
+				case '\n':
+
+					break;
+
+				default:
+					Top_i = -1;
+					printf("\n-----------------------------------\n\n       Command Doesn't Exit.\n\n-----------------------------------\n");
+					break;
+				}
+			}
+
+			while (1)
+			{
+				if (Top_i == 0)
+				{
+					Top(0); //?몌깏??셌??뤄궔킹?깍깴?뤄깗????븝궦?울궔?곻깭
+					break;
+				}
+				if (Top_i == -1)
+				{
+					break;
+				}
+				if (getch() == '\n' && Top_i != 0 && Top_i != -1)
+				{
+					Top(Top_i); //?뉃댐깾 ?몌깏????뤄궔킹?깍깴?뤄깗????븝궦?울궔?곻깭
+					break;
+				}
+			}
+			break;
+
+			
+
+		}
+
+
+		
+		checkclear();
+		if (stage == 5)
+		{
+			printf("GAME CLEAR!");
+			char a = ' ';
+
+			while (a != '\n')
+			{
+
+				a = getch();
+			}
+
+			exit(1);
+
+		}
+
+
+	}
+}
+
+
+
+void display()
+{
+	system("clear");
+
+	printf("h(?쇱そ), j(?꾨옒), k(??, l(?ㅻⅨ履?\n");
+	printf("u(undo)\n");
+	printf("r(replay)\n");
+	printf("n(new)\n");
+	printf("e(exit)\n");
+	printf("s(save)\n");
+	printf("f(file load)\n");
+	printf("d(display help)\n");
+	printf("t(top)\n");
+
+	char a = ' ';
+	while (a != '\n')
+	{
+		a = getch();
+
+	}
+
+	return;
+
+}
+
+void loadMap() {
+	FILE *fp = fopen("map3.txt", "r");
+	int x = 0, y = 0, STAGE = 0;
+	char temp;
+
+	while (1) {
+		fscanf(fp, "%c", &temp);
+		if (temp == 'e') break;
+
+		if (temp >= '1' && temp <= '5') {
+			if (temp != '1') {
+				x = y = 0;
+				STAGE++;
+			}
+
+			fscanf(fp, "\n", &temp);
+		}
+		else {
+			if (temp == '@') {
+				player_x[STAGE] = x;
+				player_y[STAGE] = y;
+			}
+
+			map[STAGE][x][y] = temp;
+			Original_map[STAGE][x][y] = (temp == '@' || temp == '$') ? '.' : temp;
+			x++;
+			if (y == 0) max_x[STAGE]++;
+
+			if (temp == '\n') {
+				x = 0;
+				y++;
+				max_y[STAGE]++;
+			}
+		}
+	}
+
+	fclose(fp);
+	return;
+}
+
+void prtMap()
+{
+	system("clear");
+	printf("Hello %s\n", USER);
+
+	for (int y = 0; y < max_y[stage]; y++) {
+		for (int x = 0; x < max_x[stage]; x++) {
+			if (map[stage][x][y] == '.')
+				printf(" ");
+			else
+				printf("%c", map[stage][x][y]);
+		}
+	}
+}
+
+int map_Check()
+{
+
+	int box_cnt[5], depository[5];
+
+	for (int i = 0; i<5; i++)
+	{
+
+		for (int j = 0; j<30; j++)
+		{
+
+			for (int k = 0; k<30; k++)
+			{
+
+				if (map[i][j][k] == '$')
+					box_cnt[i]++;
+				if (map[i][j][k] == 'O')
+					depository[i]++;
+
+			}
+		}
+
+	}
+	for (int k = 0; k<5; k++)
+	{
+		if (box_cnt[k] != depository[k])
+			return 1;
+
+	}
+
+
+
+	return 0;
+
+
+}
+
+void checkclear()
+{
+	int flag = 1;
+	for (int i = 0; i<max_y[stage]; i++) {
+		for (int j = 0; j<max_x[stage]; j++) {
+			if (Original_map[stage][j][i] == 'O') {
+				if (map[stage][j][i] != '$')
+					flag = 0;
+			}
+		}
+	}
+	if (flag) {
+		SaveTop();
+		stage++;
+	}
+
+}
+
+void re() {
+	system("clear");
+	loadMap();
+	prtMap();
+}
+
+void New()
+{
+	system("clear");
+	stage = 0;
+	move = 0;
+	loadMap();
+	prtMap();
+
+}
+
+
+void left()
+{
+	int dx = 1;
+	
+	if (map[stage][player_x[stage] - dx][player_y[stage]] == '#') {
+		move++;
+	}
+	else {
+		 
+		if (map[stage][player_x[stage] - dx][player_y[stage]] == '$') {
+			if (map[stage][player_x[stage] - dx - dx][player_y[stage]] == '#' || map[stage][player_x[stage] - dx - dx][player_y[stage]] == '$') {
+				move++;
+			}
+			else {
+				
+				if (map[stage][player_x[stage] - dx - dx][player_y[stage]] == 'O') {
+					move++;
+					map[stage][player_x[stage]][player_y[stage]] = Original_map[stage][player_x[stage]][player_y[stage]];
+					map[stage][player_x[stage] - dx][player_y[stage]] = '@';
+					map[stage][player_x[stage] - dx - dx][player_y[stage]] = '$';
+					player_x[stage]--;
+				}
+				else {
+					move++;
+					map[stage][player_x[stage]][player_y[stage]] = Original_map[stage][player_x[stage]][player_y[stage]];
+					map[stage][player_x[stage] - dx][player_y[stage]] = '@';
+					map[stage][player_x[stage] - dx - dx][player_y[stage]] = '$';
+					player_x[stage]--;
+				}
+			}
+		}
+		else {
+			move++;
+			map[stage][player_x[stage]][player_y[stage]] = Original_map[stage][player_x[stage]][player_y[stage]];
+			map[stage][player_x[stage] - dx][player_y[stage]] = '@';
+			player_x[stage]--;
+		}
+	}
+}
+
+void up()
+{
+	int dy = 1;
+	
+	if (map[stage][player_x[stage]][player_y[stage] - dy] == '#') {
+		move++;
+	}
+	else {
+		
+		if (map[stage][player_x[stage]][player_y[stage] - dy] == '$') {
+			if (map[stage][player_x[stage]][player_y[stage] - dy - dy] == '#' || map[stage][player_x[stage]][player_y[stage] - dy - dy] == '$') {
+				move++;
+			}
+			else {
+				
+				if (map[stage][player_x[stage]][player_y[stage] - dy - dy] == 'O') {
+					move++;
+					map[stage][player_x[stage]][player_y[stage]] = Original_map[stage][player_x[stage]][player_y[stage]];
+					map[stage][player_x[stage]][player_y[stage] - dy] = '@';
+					map[stage][player_x[stage]][player_y[stage] - dy - dy] = '$';
+					player_y[stage]--;
+				}
+				else {
+					move++;
+					map[stage][player_x[stage]][player_y[stage]] = Original_map[stage][player_x[stage]][player_y[stage]];
+					map[stage][player_x[stage]][player_y[stage] - dy] = '@';
+					map[stage][player_x[stage]][player_y[stage] - dy - dy] = '$';
+					player_y[stage]--;
+				}
+			}
+		}
+		else {
+			move++;
+			map[stage][player_x[stage]][player_y[stage]] = Original_map[stage][player_x[stage]][player_y[stage]];
+			map[stage][player_x[stage]][player_y[stage] - dy] = '@';
+			player_y[stage]--;
+		}
+	}
+}
+
+void down()
+{
+	int dy = 1;
+	
+	if (map[stage][player_x[stage]][player_y[stage] + dy] == '#') {
+		move++;
+	}
+	else {
+	
+		if (map[stage][player_x[stage]][player_y[stage] + dy] == '$') {
+			if (map[stage][player_x[stage]][player_y[stage] + dy + dy] == '#' || map[stage][player_x[stage]][player_y[stage] + dy + dy] == '$') {
+				move++;
+			}
+			else {
+				
+				if (map[stage][player_x[stage]][player_y[stage] + dy + dy] == 'O') {
+					move++;
+					map[stage][player_x[stage]][player_y[stage]] = Original_map[stage][player_x[stage]][player_y[stage]];
+					map[stage][player_x[stage]][player_y[stage] + dy] = '@';
+					map[stage][player_x[stage]][player_y[stage] + dy + dy] = '$';
+					player_y[stage]++;
+				}
+				else {
+					move++;
+					map[stage][player_x[stage]][player_y[stage]] = Original_map[stage][player_x[stage]][player_y[stage]];
+					map[stage][player_x[stage]][player_y[stage] + dy] = '@';
+					map[stage][player_x[stage]][player_y[stage] + dy + dy] = '$';
+					player_y[stage]++;
+				}
+			}
+		}
+		else {
+			move++;
+			map[stage][player_x[stage]][player_y[stage]] = Original_map[stage][player_x[stage]][player_y[stage]];
+			map[stage][player_x[stage]][player_y[stage] + dy] = '@';
+			player_y[stage]++;
+		}
+	}
+}
+
+void right()
+{
+	int dx = 1;
+	
+	if (map[stage][player_x[stage] + dx][player_y[stage]] == '#') {
+		move++;
+	}
+	else {
+		
+		if (map[stage][player_x[stage] + dx][player_y[stage]] == '$') {
+			if (map[stage][player_x[stage] + dx + dx][player_y[stage]] == '#' || map[stage][player_x[stage] + dx + dx][player_y[stage]] == '$') {
+				move++;
+			}
+			else {
+				
+				if (map[stage][player_x[stage] + dx + dx][player_y[stage]] == 'O') {
+					move++;
+					map[stage][player_x[stage]][player_y[stage]] = Original_map[stage][player_x[stage]][player_y[stage]];
+					map[stage][player_x[stage] + dx][player_y[stage]] = '@';
+					map[stage][player_x[stage] + dx + dx][player_y[stage]] = '$';
+					player_x[stage]++;
+				}
+				else {
+					move++;
+					map[stage][player_x[stage]][player_y[stage]] = Original_map[stage][player_x[stage]][player_y[stage]];
+					map[stage][player_x[stage] + dx][player_y[stage]] = '@';
+					map[stage][player_x[stage] + dx + dx][player_y[stage]] = '$';
+					player_x[stage]++;
+				}
+			}
+		}
+		else {
+			move++;
+			map[stage][player_x[stage]][player_y[stage]] = Original_map[stage][player_x[stage]][player_y[stage]];
+			map[stage][player_x[stage] + dx][player_y[stage]] = '@';
+			player_x[stage]++;
+		}
+	}
+}
+
+void undoupdate_first()
+{
+
+
+	for (int c = 0; c<5; c++)
+	{
+		for (int i = 0; i<max_x[stage]; i++)
+		{
+			for (int j = 0; j<max_y[stage]; j++)
+			{
+				undomap[c][i][j] = map[stage][i][j];
+			}
+		}
+	}
+
+}
+
+void undoupdate()
+{
+
+	for (int c = 5; c>1; c--)
+	{
+		for (int i = 0; i<max_x[stage]; i++)
+		{
+			for (int j = 0; j<max_y[stage]; j++)
+			{
+
+				undomap[c - 1][i][j] = undomap[c - 2][i][j];
+			}
+		}
+	}
+
+	for (int k = 0; k<max_x[stage]; k++)
+	{
+		for (int l = 0; l<max_y[stage]; l++)
+		{
+			undomap[0][k][l] = map[stage][k][l];
+		}
+	}
+
+	for (int p = 4; p >= 1; p--)
+	{
+		Copy_player_x[p] = Copy_player_x[p - 1];
+		Copy_player_y[p] = Copy_player_y[p - 1];
+
+	}
+
+	Copy_player_x[0] = player_x[stage];
+	Copy_player_y[0] = player_y[stage];
+	
+}
+
+void undo()
+{
+	if (undocount == 0)
+	{
+		printf("undo finished");
+		return;
+	}
+	player_x[stage] = Copy_player_x[0];
+	player_y[stage] = Copy_player_y[0];
+
+	for (int p = 0; p < 4; p++)
+	{
+		Copy_player_x[p] = Copy_player_x[p + 1];
+		Copy_player_y[p] = Copy_player_y[p + 1];
+
+	}
+
+	for (int i = 0; i<max_x[stage]; i++)
+	{
+		for (int j = 0; j<max_y[stage]; j++)
+		{
+			map[stage][i][j] = undomap[0][i][j];
+		}
+	}
+
+	for (int c = 0; c<4; c++)
+	{
+		for (int i = 0; i<max_x[stage]; i++)
+		{
+			for (int j = 0; j<max_y[stage]; j++)
+			{
+				undomap[c][i][j] = undomap[c + 1][i][j];
+			}
+		}
+	}
+
+
+	undocount--;
+}
+
+void Save()
+{
+	FILE *save;
+
+	save = fopen("sokoban.txt", "w"); 
+
+	fprintf(save, "%s\n", USER);
+	fprintf(save, "%d\n", undocount);
+	fprintf(save, "%d\n", move);
+	fprintf(save, "%d\n", stage);
+
+	for (int i = 0; i < max_y[stage]; i++)
+	{
+		for (int j = 0; j < max_x[stage]; j++)
+		{
+			fprintf(save, "%c", map[stage][j][i]);
+		}
+	}
+
+	fclose(save);
+}
+
+void file()
+{
+	FILE *fileload;
+	char ch;
+	int x = 0, y = 0;
+
+	fileload = fopen("sokoban.txt", "r");
+
+	if (fileload == NULL) exit(1); 
+
+								   
+	fscanf(fileload, "%s\n%d\n%d\n%d\n", &USER, &undocount, &move, &stage);
+	
+	while (fscanf(fileload, "%c", &ch) != EOF) {
+		map[stage][x][y] = ch;
+		printf("%c", ch);
+
+		if (ch == '@') {
+			player_x[stage] = x;
+			player_y[stage] = y;
+		}
+
+		if (ch == '\n') {
+			y++;
+			x = 0;
+		}
+		else {
+			x++;
+		}
+	}
+
+	fclose(fileload);
+	prtMap();
+}
+
+
+
+void SaveTop()
+{
+	FILE *fp;
+	char name[11];
+	char a;
+	int record;
+	int i, j, k;
+
+	fp = fopen("ranking.txt", "r");
+
+	//?낅젰
+	while (1)
+	{
+		for (i = 0; i < 5; i++)
+		{
+			for (j = 0; j < 5; j++)
+			{
+				fscanf(fp, "%s %d\n", name, &record);
+				for (k = 0; k < 11; k++)
+				{
+					if ((name[0] == '.' && name[1] == '.' && name[2] == '.' && name[3] == '\0') || (name[0] == '.' && name[1] == '.' && name[2] == '\0'))
+					{
+						rank_name[i][j][0] = ' ';
+						rank_name[i][j][1] = ' ';
+						rank_name[i][j][2] = '\0';
+						break; //?대쫫??0.0 ?뷀뤃??媛믪쑝濡??섏뼱?덉쑝硫?諛곗뿴??"  "?쇰줈 ??ν븳??
+					}
+					if (name[k] == '\0')
+					{
+						break;
+					}
+					rank_name[i][j][k] = name[k];
+				}
+				rank_cnt[i][j] = record;
+			}
+		}
+		if ((fscanf(fp, "%c", &a)) == EOF)
+		{
+			break; //?뚯씪???앸굹硫??붿씠??諛섎났?섏? ?딅뒗??
+		}
+	}
+
+	//?덈줈???먯닔 媛믪씠 ?낅젰?섎㈃ ?ш린瑜?鍮꾧탳??諛곗뿴???ｋ뒗??
+	for (i = 0; i < 4; i++)
+	{
+		//?덈줈???먯닔媛믪씠 0~3踰?혡 ?먯닔???ъ씠???ㅼ뼱媛嫄곕굹 0?꾩젣?명븳 媛믪쨷 媛???대븣
+		if (rank_cnt[stage][i] > move || rank_cnt[stage][i] == 0)
+		{
+			//?덈줈???먯닔媛믪씠 ?ㅼ뼱媛덉옄由щ? 鍮꾩슦湲??꾪빐 ?ㅻ줈 媛믪쓣 誘몃，??
+			for (j = 0; j < 4 - i; j++)
+			{
+				rank_cnt[stage][4 - j] = rank_cnt[stage][3 - j];
+				for (k = 0; k < 11; k++)
+				{
+					rank_name[stage][4 - j][k] = rank_name[stage][3 - j][k];
+				}
+			}
+			for (k = 0; k < 11; k++)  //?덈줈???먯닔媛??낅젰
+			{
+				rank_name[stage][i][k] = USER[k];
+			}
+			rank_cnt[stage][i] = move;
+			break;
+		}
+	}
+	//?덈줈???먯닔媛 4踰덉㎏媛믪씪??
+	if (rank_cnt[stage][i] > move || rank_cnt[stage][i] == 0)
+	{
+		rank_cnt[stage][i] = move;
+
+		for (k = 0; k < 11; k++)
+		{
+			rank_name[stage][i][k] = USER[k];
+		}
+	}
+
+	fclose(fp);
+
+	//??궧 ?뚯씪?????
+	fp = fopen("ranking.txt", "w");
+
+	for (i = 0; i < 5; i++)
+	{
+		for (j = 0; j < 5; j++)
+		{
+			if (rank_name[i][j][0] == ' ' && rank_name[i][j][1] == ' ' && rank_name[i][j][2] == '\0')
+			{
+				fprintf(fp, "... ", rank_name[i][j]); //?대쫫??"  "?대㈃ ... ?뷀뤃??媛믪쑝濡????
+			}
+			else
+			{
+				fprintf(fp, "%s ", rank_name[i][j]);
+			}
+			fprintf(fp, "%d", rank_cnt[i][j]);
+		}
+	}
+
+	fclose(fp);
+
+}
+void Top(int Top_num)
+{
+	FILE *fp;
+	char name[11];
+	char a;
+	int record;
+	int i, j, k;
+
+	fp = fopen("ranking.txt", "r");
+
+	//?대쫫怨?湲곕줉???쎌뼱?ㅼ씤??
+	while (1)
+	{
+		for (i = 0; i < 5; i++)
+		{
+			for (j = 0; j < 5; j++)
+			{
+				fscanf(fp, "%s %d\n", &name, &record);
+				for (k = 0; k < 11; k++)
+				{
+					if (name[0] == '.' && name[1] == '.' && name[2] == '.')
+					{
+						rank_name[i][j][0] = ' ';
+						rank_name[i][j][1] = ' ';
+						rank_name[i][j][2] = '\0';
+						break; //?대쫫??0.0 ?뷀뤃??媛믪쑝濡??섏뼱?덉쑝硫?諛곗뿴??"  "?쇰줈 ??ν븳??
+					}
+					if (name[k] == '\0')
+					{
+						break;
+					}
+					rank_name[i][j][k] = name[k];
+				}
+				rank_cnt[i][j] = record;
+			}
+		}
+		if ((fscanf(fp, "%c", &a)) == EOF)
+		{
+			break; //?뚯씪???앸굹硫??붿씠??諛섎났?섏? ?딅뒗??
+		}
+	}
+
+	int s = 0; //?대쫫????λ릺?댁엳?붿????좊Т濡?異쒕젰?섍린?꾪븳 蹂??
+
+			   //Top_i???곕씪 異쒕젰
+	while (1)
+	{
+		system("clear"); //0?쇰븣 紐⑤뱺留듭쓽 湲곕줉 異쒕젰
+		system("clear");
+		if (Top_num == 0)
+		{
+			for (i = 0; i < 5; i++)
+			{
+				printf("map %d\n\n", i + 1);
+				for (j = 0; j < 5; j++)
+				{
+					for (k = 0; k < 11; k++)
+					{
+						if (rank_name[i][j][0] == ' ' && rank_name[i][j][1] == ' ' && rank_name[i][j][2] == '\0')
+						{
+							s = 0;
+							break; //?대쫫??"  "?쇰줈 湲곕줉???놁쑝硫?異쒕젰?섏? ?딄쾶 ??
+						}
+						else
+						{
+							s = 1;
+							break;
+						}
+					}
+					if (s == 1) //湲곕줉???덉쓣寃쎌슦 異쒕젰
+					{
+						printf("%s  ", rank_name[i][j]);
+						printf("%d", rank_cnt[i][j]);
+					}
+					printf("\n");
+				}
+			}
+		}
+		if (Top_num != 0)
+		{
+			i = Top_num - 1;
+			printf("map %d\n\n", i + 1);
+			for (j = 0; j < 5; j++)
+			{
+				for (k = 0; k < 11; k++)
+				{
+					if (rank_name[i][j][0] == ' ' && rank_name[i][j][1] == ' ' && rank_name[i][j][2] == '\0')
+					{
+						s = 0;
+						break; //?대쫫??"  "?쇰줈 湲곕줉???놁쑝硫?異쒕젰?섏? ?딄쾶 ??
+					}
+					else
+					{
+						s = 1;
+						break;
+					}
+				}
+				if (s == 1) //湲곕줉???덉쓣寃쎌슦 異쒕젰
+				{
+					printf("%s  ", rank_name[i][j]);
+					printf("%d", rank_cnt[i][j]);
+				}
+				printf("\n");
+			}
+		}
+		printf("?섍??ㅻ㈃ ?뷀꽣?ㅻ? ?꾨Ⅴ?쒖삤."); //異쒕젰???ㅼ뼱???곹깭硫댁꽌 t,T 瑜??꾨?寃쎌슦 鍮좎졇?섍컙??
+		if (getch() == '\n' && t_flg == 1)
+		{
+			t_flg = 0;
+			break;
+		}
+	}
+	return;
+
+}
