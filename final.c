@@ -81,6 +81,7 @@ void command()
 {
 	char usr;
 	int i, j, k;
+	char enter;
 	printf("tesasdt\n");
 
 	while (1)
@@ -142,8 +143,76 @@ void command()
 			break;
 
 		case 't':
-			Top(Top_i);
+			if (t_flg == 0)
+			{
+				t_flg = 1;
+			}
+			enter = getch();
+			if (enter == '\n')
+				Top_i = 0; //t Է
+			else {
+				enter = getch();
+				printf(" ");
+				switch (enter)
+				{
+					// enter  1, 2, 3, 4, 5    Top 
+				case '1':
+					printf("1");
+					Top_i = 1;
+					break;
+
+				case '2':
+					printf("2");
+					Top_i = 2;
+					break;
+
+				case '3':
+					printf("3");
+					Top_i = 3;
+					break;
+
+				case '4':
+					printf("4");
+					Top_i = 4;
+					break;
+
+				case '5':
+					printf("5");
+					Top_i = 5;
+					break;
+
+					// enter  '\n'   ü Top 
+				case '\n':
+
+					break;
+
+				default:
+					Top_i = -1;
+					printf("\n-----------------------------------\n\n       Command Doesn't Exit.\n\n-----------------------------------\n");
+					break;
+				}
+			}
+
+			while (1)
+			{
+				if (Top_i == 0)
+				{
+					Top(0); //ü ŷ 
+					break;
+				}
+				if (Top_i == -1)
+				{
+					break;
+				}
+				if (getch() == '\n' && Top_i != 0 && Top_i != -1)
+				{
+					Top(Top_i); //ش  ŷ 
+					break;
+				}
+			}
 			break;
+
+			
 
 		}
 
@@ -197,7 +266,7 @@ void display()
 }
 
 void loadMap() {
-	FILE *fp = fopen("map.txt", "r");
+	FILE *fp = fopen("map1.txt", "r");
 	int x = 0, y = 0, STAGE = 0;
 	char temp;
 
