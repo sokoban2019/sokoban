@@ -82,7 +82,7 @@ void command()
 	char usr;
 	int i, j, k;
 	char enter;
-	printf("tesasdt\n");
+	
 
 	while (1)
 	{
@@ -124,6 +124,7 @@ void command()
 
 		case 'n':
 			New();
+			undoupdate_first();
 			break;
 
 		case 'u':
@@ -269,6 +270,12 @@ void loadMap() {
 	FILE *fp = fopen("map1.txt", "r");
 	int x = 0, y = 0, STAGE = 0;
 	char temp;
+	
+	for (int c = 0; c < 5; c++)
+	{
+		max_x[c] = 0;
+		max_y[c] = 0;
+	}
 
 	while (1) {
 		fscanf(fp, "%c", &temp);
@@ -378,7 +385,7 @@ void checkclear()
 void re() {
 	system("clear");
 	loadMap();
-	prtMap();
+	
 }
 
 void New()
@@ -386,8 +393,9 @@ void New()
 	system("clear");
 	stage = 0;
 	move = 0;
+	undocount = 5;
 	loadMap();
-	prtMap();
+	
 
 }
 
@@ -813,7 +821,7 @@ void Top(int Top_num)
 
 	fp = fopen("ranking.txt", "r");
 
-	//이름과 기록을 읽어들인다.
+	
 	while (1)
 	{
 		for (i = 0; i < 5; i++)
@@ -828,7 +836,7 @@ void Top(int Top_num)
 						rank_name[i][j][0] = ' ';
 						rank_name[i][j][1] = ' ';
 						rank_name[i][j][2] = '\0';
-						break; //이름이 0.0 디폴트 값으로 되어있으면 배열에 "  "으로 저장한다
+						break;
 					}
 					if (name[k] == '\0')
 					{
