@@ -1,0 +1,92 @@
+
+void undoupdate_first()
+{
+
+
+	for (int c = 0; c<5; c++)//맨처음에 언두 맵을 처음 맵으로 다 초기화시켜주기
+	{
+		for (int i = 0; i<max_x[stage]; i++)
+		{
+			for (int j = 0; j<max_y[stage]; j++)
+			{
+				undomap[c][i][j] = map[stage][i][j];
+			}
+		}
+	}
+
+}
+
+void undoupdate()
+{
+	
+	for (int c = 5; c>1; c--)//언두맵 맨 마지막값은 버리고 하나씩 밀어서 넣기
+	{
+		for (int i = 0; i<max_x[stage]; i++)
+		{
+			for (int j = 0; j<max_y[stage]; j++)
+			{
+
+				undomap[c - 1][i][j] = undomap[c - 2][i][j];
+			}
+		}
+	}
+
+	for (int k = 0; k<max_x[stage]; k++)//현재 맵 상태를 undomap에 넣기
+	{
+		for (int l = 0; l<max_y[stage]; l++)
+		{
+			undomap[0][k][l] = map[stage][k][l];
+		}
+	}
+
+	for (int p = 4; p >= 1; p--)//저장된 그전 플레이어 위치도 하나씩 밀기
+	{
+		Copy_player_x[p] = Copy_player_x[p - 1];
+		Copy_player_y[p] = Copy_player_y[p - 1];
+
+	}
+
+	Copy_player_x[0] = player_x[stage];//현재 위치를 저장
+	Copy_player_y[0] = player_y[stage];
+
+}
+
+void undo()
+{
+	if (undocount == 0)//만약 undo횟수를 다 사용했더라면 기능하지 않도록 검사 
+	{
+		printf("undo finished");
+		return;
+	}
+	player_x[stage] = Copy_player_x[0];//undo update에서 저장해놓은 그전 플레이어 위치를 현재 플레이어 위치로 바꿈
+	player_y[stage] = Copy_player_y[0];
+
+	for (int p = 0; p < 4; p++)//그전 플레이어위치를 하나씩 끌어오기 
+	{
+		Copy_player_x[p] = Copy_player_x[p + 1];
+		Copy_player_y[p] = Copy_player_y[p + 1];
+
+	}
+
+	for (int i = 0; i<max_x[stage]; i++)
+	{
+		for (int j = 0; j<max_y[stage]; j++)
+		{
+			map[stage][i][j] = undomap[0][i][j];//현재 맵상태를 그전 상태로 바꾸기
+		}
+	}
+
+	for (int c = 0; c < 4; c++)
+	{
+		for (int i = 0; i < max_x[stage]; i++)
+		{
+			for (int j = 0; j < max_y[stage]; j++)
+			{
+				undomap[c][i][j] = undomap[c + 1][i][j];//undomap 그전상태를 하나씩 끌어오기
+			}
+		}
+	}
+
+
+	undocount--;
+}
